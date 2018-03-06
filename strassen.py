@@ -217,7 +217,16 @@ def Strassen( matrix_1 , matrix2 ):
 	#print(B)
 
 	# Chamada da função recursiva
-	return matrix_multiplication(A, B, order)
+	A = matrix_multiplication(A, B, order)
+
+	# Retorna matriz com tamanho correto
+	C = [[0 for i in range(0, len(matrix_1))] for j in range(0, len(matrix2[0]))]
+
+	for i in range(0, len(C)):
+		for j in range(0, len(C[0])):
+			C[i][j] = A[i][j]
+
+	return C
 
 	pass
 
