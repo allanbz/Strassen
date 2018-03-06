@@ -193,6 +193,9 @@ def Strassen( matrix_1 , matrix2 ):
 	if(math.log2(order) != int):
 		order = pow(2, math.ceil(math.log2(order)))
 
+	# Caso especial de matriz 1x1
+	if order == 1:
+		order = 2
 	#print(order)
 
 	# Novas matrizes quadradas completadas com zero
@@ -218,13 +221,16 @@ def Strassen( matrix_1 , matrix2 ):
 
 	# Chamada da função recursiva
 	A = matrix_multiplication(A, B, order)
+	#print(A)
 
 	# Retorna matriz com tamanho correto
-	C = [[0 for i in range(0, len(matrix_1))] for j in range(0, len(matrix2[0]))]
+	C = [[0 for i in range(0, len(matrix2[0]))] for j in range(0, len(matrix_1))]
+	#print(C)
 
 	for i in range(0, len(C)):
 		for j in range(0, len(C[0])):
 			C[i][j] = A[i][j]
+			#print(j)
 
 	return C
 
