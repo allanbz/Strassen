@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import math
 
+# define deslocamento dos quadrantes
 def offset(a, b, order, quadrant):
 	if quadrant == 1:
 		a = b = 0
@@ -18,6 +19,7 @@ def offset(a, b, order, quadrant):
 	
 	return a,b
 
+# soma final do algoritmo
 def solve( result, A, B, order, quadrant ):
 	
 	a = b = 0
@@ -27,6 +29,7 @@ def solve( result, A, B, order, quadrant ):
 		for j in range(0, order):
 			result[i+a][j+b] = A[i][j] + B[i][j]
 
+# operação de soma (op_code = 0) e subtração (op_code = 1) de matrizes
 def matrix_op( result, a, b, order, op_code):
 
 	scalar = 1
@@ -38,6 +41,7 @@ def matrix_op( result, a, b, order, op_code):
 		for j in range(0, order):
 			result[i][j] = a[i][j] + (scalar * b[i][j])
 
+# copia as sub-matrizes de cada quadrante
 def copy_submatrix( to, of, order, quadrant ):
 	
 	a = b = 0
@@ -47,10 +51,10 @@ def copy_submatrix( to, of, order, quadrant ):
 			for j in range(0, order):
 				to[i][j] = of[i+a][j+b]
 
+# recursão para multiplicação de matrizes
 def matrix_multiplication( A, B, order ):
 
 	# Condição de parada (matrizes de ordem 2):
-	# TODO: AJEITAR PRINT FINAL DAS MATRIZES (REMOVER ZERO)
 	if order == 2:
 		
 		C = [[0 for i in range(0, order)] for j in range(0, order)]
@@ -70,13 +74,12 @@ def matrix_multiplication( A, B, order ):
 
 		return C
 
-	# Se não for uma matriz 2x2, divide novamente
+	# Se não for uma matriz 2x2, divide em 4 sub-matrizes
 	else:
 
 		order //= 2
-		#print(order)
 
-		# Cria 4 sub-matrizes para cada matriz com a nova ordem
+		# Cria 4 sub-matrizes para as matrizes A e B com a nova ordem
 		a1 = [[0 for i in range(0, order)] for j in range(0, order)]
 		a2 = [[0 for i in range(0, order)] for j in range(0, order)]
 		a3 = [[0 for i in range(0, order)] for j in range(0, order)]
@@ -97,67 +100,50 @@ def matrix_multiplication( A, B, order ):
 		copy_submatrix(b4, B, order, 3)
 		copy_submatrix(b3, B, order, 4)
 
-		# Calcula as matrizes M1...M7 do algorítmo de Strassen
+		# Cálculo das matrizes M1...M7 do algoritmo de Strassen
 		
 		# M1
 		a1a4 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(a1a4, a1, a4, order, 0)
-		#print(a1a4)
 		b1b4 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(b1b4, b1, b4, order, 0)
-		#print(b1b4)
 		M1 = matrix_multiplication(a1a4, b1b4, order)
-		#print(M1)
 
 		# M2
 		a3a4 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(a3a4, a3, a4, order, 0)
-		#print(a3a4)
 		M2 = matrix_multiplication(a3a4, b1, order)
-		#print(M2)
 
 		# M3
 		b2b4 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(b2b4, b2, b4, order, 1)
-		#print(b2b4)
 		M3 = matrix_multiplication(a1, b2b4, order)
-		#print(M3)
 
 		# M4
 		b3b1 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(b3b1, b3, b1, order, 1)
-		#print(b3b1)
 		M4 = matrix_multiplication(a4, b3b1, order)
-		#print(M4)
 
 		# M5
 		a1a2 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(a1a2, a1, a2, order, 0)
-		#print(a1a2)
 		M5 = matrix_multiplication(a1a2, b4, order)
-		#print(M5)
 
 		# M6
 		a3a1 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(a3a1, a3, a1, order, 1)
-		#print(a3a1)
 		b1b2 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(b1b2, b1, b2, order, 0)
-		#print(b1b2)
 		M6 = matrix_multiplication(a3a1, b1b2, order)
-		#print(M6)
 
 		# M7
 		a2a4 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(a2a4, a2, a4, order, 1)
-		#print(a2a4)
 		b3b4 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(b3b4, b3, b4, order, 0)
-		#print(b3b4)
 		M7 = matrix_multiplication(a2a4, b3b4, order)
-		#print(M7)
 
-		# Cria matriz resultante da multiplicação
+		# Define matriz resultante C da multiplicação
 		C = [[0 for i in range(0, 2*order)] for j in range(0, 2*order)]
 
 		# C1
@@ -166,15 +152,12 @@ def matrix_multiplication( A, B, order ):
 		m5m7 = [[0 for i in range(0, order)] for j in range(0, order)]
 		matrix_op(m5m7, M7, M5, order, 1)
 		solve(C, m1m4, m5m7, order, 1)
-		#print(C)
 
 		# C2	
 		solve(C, M3, M5, order, 2)
-		#print(C)
 
 		# C3
 		solve(C, M2, M4, order, 4)
-		#print(C)
 
 		# C4
 		m1m6 = [[0 for i in range(0, order)] for j in range(0, order)]
@@ -185,10 +168,11 @@ def matrix_multiplication( A, B, order ):
 		
 		return C
 
-def Strassen( matrix_1 , matrix2 ):
-
-	# Verifica qual potência de 2 representa uma matriz com ordem para alocar as matrizes
-	order = max(len(matrix_1), len(matrix2), len(matrix_1[0]), len(matrix2[0]))
+# prepara execução do algoritmo de Strassen
+def Strassen( matrix1 , matrix2 ):
+    
+    # Verifica qual potência de 2 representa uma matriz com ordem para alocar as matrizes 1 e 2
+	order = max(len(matrix1), len(matrix2), len(matrix1[0]), len(matrix2[0]))
 
 	if(math.log2(order) != int):
 		order = pow(2, math.ceil(math.log2(order)))
@@ -196,46 +180,33 @@ def Strassen( matrix_1 , matrix2 ):
 	# Caso especial de matriz 1x1
 	if order == 1:
 		order = 2
-	#print(order)
 
 	# Novas matrizes quadradas completadas com zero
-
 	A = [[0 for i in range(0, order)] for j in range(0, order)]
 	B = [[0 for i in range(0, order)] for j in range(0, order)]
 
-	#print(A)
-	#print(B)
-
-	# Copia matrizes originais nas novas matrizes maiores
-
-	for i in range(len(matrix_1)):
-		for j in range(len(matrix_1[0])):
-			A[i][j] += matrix_1[i][j]
+	# Copia matrizes originais 1 e 2 nas novas matrizes maiores A e B
+	for i in range(len(matrix1)):
+		for j in range(len(matrix1[0])):
+			A[i][j] += matrix1[i][j]
 
 	for i in range(len(matrix2)):
 		for j in range(len(matrix2[0])):
 			B[i][j] += matrix2[i][j]
 
-	#print(A)
-	#print(B)
-
 	# Chamada da função recursiva
 	A = matrix_multiplication(A, B, order)
-	#print(A)
 
-	# Retorna matriz com tamanho correto
-	C = [[0 for i in range(0, len(matrix2[0]))] for j in range(0, len(matrix_1))]
-	#print(C)
+	# Copia matriz resultante usando o tamanho correto
+	C = [[0 for i in range(0, len(matrix2[0]))] for j in range(0, len(matrix1))]
 
 	for i in range(0, len(C)):
 		for j in range(0, len(C[0])):
 			C[i][j] = A[i][j]
-			#print(j)
 
 	return C
 
-	pass
-
+# leitura das matrizes de entrada
 def readFiles( name_m1 , name_m2 ):
 
 	matrix1 = []
@@ -256,8 +227,6 @@ def readFiles( name_m1 , name_m2 ):
 
 	return matrix1 , matrix2
 
-
 m1 , m2 = readFiles( 'M1.in' , 'M2.in' )
 
-
-print( Strassen(m1,m2) )
+print(Strassen( m1 , m2 ))
